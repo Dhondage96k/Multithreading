@@ -1,0 +1,219 @@
+🔹 Executor Framework in Java (Deep Explanation)
+
+The Executor Framework (introduced in Java 5) is a higher-level replacement for manually creating and managing threads.
+It helps in managing a pool of threads, task submission, scheduling, and result handling.
+
+1. Key Interfaces in Executor Framework
+
+Executor
+
+The root interface.
+
+Has a single method:
+
+void execute(Runnable command);
+
+Example:
+
+Executor executor = command -> new Thread(command).start();
+executor.execute(() -> System.out.println("Task executed"));
+
+ExecutorService (extends Executor)
+
+More powerful, provides lifecycle management and task submission.
+
+Important methods:
+
+submit(Callable<T> task) → returns Future<T>
+
+submit(Runnable task) → returns Future<?>
+
+invokeAll(Collection<? extends Callable<T>> tasks)
+
+invokeAny(Collection<? extends Callable<T>> tasks)
+
+shutdown(), shutdownNow()
+
+isShutdown(), isTerminated()
+
+ScheduledExecutorService (extends ExecutorService)
+
+Adds task scheduling features.
+
+Methods:
+
+schedule(Runnable/Callable, delay, TimeUnit)
+
+scheduleAtFixedRate(Runnable, initialDelay, period, TimeUnit)
+
+scheduleWithFixedDelay(Runnable, initialDelay, delay, TimeUnit)
+
+
+
+
+2. Key Classes in Executor Framework
+
+Executors (Utility class)
+
+Factory methods to create different kinds of thread pools:
+
+newSingleThreadExecutor()
+
+newFixedThreadPool(int nThreads)
+
+newCachedThreadPool()
+
+newScheduledThreadPool(int nThreads)
+
+newWorkStealingPool()
+
+ThreadPoolExecutor (Core implementation)
+
+Implements ExecutorService.
+
+Parameters:
+
+corePoolSize
+
+maximumPoolSize
+
+keepAliveTime
+
+workQueue
+
+threadFactory
+
+RejectedExecutionHandler
+
+Example:
+
+ThreadPoolExecutor executor = new ThreadPoolExecutor(
+2, 4, 10, TimeUnit.SECONDS,
+new LinkedBlockingQueue<Runnable>()
+);
+
+ScheduledThreadPoolExecutor
+
+Implements ScheduledExecutorService.
+
+Allows periodic and delayed task execution.
+
+ForkJoinPool
+
+Designed for divide-and-conquer tasks (work-stealing algorithm).
+
+Often used with Java 8 parallel streams.
+
+
+
+
+
+3. Important Concepts
+
+Runnable vs Callable
+
+Runnable: no return value, cannot throw checked exceptions.
+
+Callable<V>: returns a value (V), can throw checked exceptions.
+
+Future
+
+Represents the result of an asynchronous computation.
+
+Methods:
+
+get(), get(timeout, unit)
+
+cancel()
+
+isDone(), isCancelled()
+
+CompletableFuture (Java 8+)
+
+Enhances Future with functional programming style.
+
+Supports:
+
+Chaining tasks (thenApply, thenAccept)
+
+Combining results (thenCombine)
+
+Handling exceptions (exceptionally)
+
+BlockingQueue
+
+Used in thread pools to store tasks.
+
+Common types:
+
+LinkedBlockingQueue
+
+ArrayBlockingQueue
+
+SynchronousQueue
+
+PriorityBlockingQueue
+
+RejectedExecutionHandler
+
+Defines what happens when the executor cannot accept new tasks.
+
+Policies:
+
+AbortPolicy (default, throws exception)
+
+DiscardPolicy (silently discards task)
+
+DiscardOldestPolicy (removes oldest task, adds new one)
+
+CallerRunsPolicy (caller executes the task)
+
+Thread Factory
+
+Used to customize thread creation (e.g., naming threads, daemon threads).
+
+4. Executor Lifecycle
+
+Normal Flow
+
+newFixedThreadPool(…) → submit tasks → shutdown() → awaitTermination()
+
+States
+
+RUNNING → SHUTDOWN → STOP → TERMINATED
+
+Methods
+
+shutdown() → no new tasks, finish existing ones.
+
+shutdownNow() → attempts to stop all tasks immediately.
+
+5. Types of Thread Pools
+
+SingleThreadExecutor
+
+Single worker thread, tasks executed sequentially.
+
+Useful for event processing.
+
+FixedThreadPool
+
+Fixed number of threads, tasks queued if all are busy.
+
+Useful when workload is known.
+
+CachedThreadPool
+
+Expands thread pool dynamically.
+
+Suitable for many short-lived tasks.
+
+ScheduledThreadPool
+
+For delayed or periodic execution.
+
+WorkStealingPool
+
+Uses ForkJoinPool internally.
+
+Good for parallel processing.
