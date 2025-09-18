@@ -42,7 +42,7 @@ public class CountDownLatchh {
       System.out.println(Thread.currentThread().getName() + "\t" +"Service started");
       try {
         Thread.sleep(1000);
-        
+        count.await();
         
       } catch (Exception e) {
          
